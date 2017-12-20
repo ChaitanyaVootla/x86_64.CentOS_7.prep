@@ -33,6 +33,8 @@ jobs:
   # TODO: move this job to x86_64 CentOS_7
   - name: reqExec_x86_64_CentOS_7_pack
     type: runSh
+    triggerMode: parallel
+    dependencyMode: strict
     steps:
       - IN: x86_64_Centos_7_prep_repo
         switch: off

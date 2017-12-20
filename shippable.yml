@@ -6,16 +6,6 @@ resources:
       sourceName: shippable/x86_64.CentOS_7.prep
       branch: master
 
-  - name: CentOS7_bits_ecr_cli
-    type: cliConfig
-    integration: ecr_bits_push
-    pointer:
-      region: us-east-1
-
-  - name: CentOS7_dh_cli
-    type: cliConfig
-    integration: ric03uec-dockerhub
-
   - name: CentOS7_bits_access_cli
     type: cliConfig
     integration: aws_bits_access

@@ -1,28 +1,28 @@
 resources:
-  - name: x86_64_Centos_7_prep_repo
+  - name: x86_64_CentOS_7_prep_repo
     type: gitRepo
     integration: avinci_gh
     pointer:
-      sourceName: shippable/x86_64.Centos_7.prep
+      sourceName: shippable/x86_64.CentOS_7.prep
       branch: master
 
-  - name: centos7_bits_ecr_cli
+  - name: CentOS7_bits_ecr_cli
     type: cliConfig
     integration: ecr_bits_push
     pointer:
       region: us-east-1
 
-  - name: centos7_dh_cli
+  - name: CentOS7_dh_cli
     type: cliConfig
     integration: ric03uec-dockerhub
 
-  - name: centos7_bits_access_cli
+  - name: CentOS7_bits_access_cli
     type: cliConfig
     integration: aws_bits_access
     pointer:
       region: us-east-1
 
-  - name: centos7_reqExec_repo
+  - name: CentOS7_reqExec_repo
     type: gitRepo
     integration: avinci_gh
     pointer:
@@ -36,14 +36,14 @@ jobs:
     triggerMode: parallel
     dependencyMode: strict
     steps:
-      - IN: x86_64_Centos_7_prep_repo
+      - IN: x86_64_CentOS_7_prep_repo
         switch: off
-      - IN: centos7_bits_access_cli
+      - IN: CentOS7_bits_access_cli
         switch: off
       - IN: microbase_img
-      - IN: centos7_reqExec_repo
+      - IN: CentOS7_reqExec_repo
       - TASK:
           script:
-            - pushd $(shipctl get_resource_state "x86_64_Centos_7_prep_repo")
-            - ./buildAndPushReqExecArtifacts.sh centos7_reqExec_repo
+            - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
+            - ./buildAndPushReqExecArtifacts.sh CentOS7_reqExec_repo
             - popd

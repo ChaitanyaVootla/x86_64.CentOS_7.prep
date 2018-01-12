@@ -37,6 +37,5 @@ jobs:
           name: create_centOS7_artifacts
           script:
             - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
-            - ls -atlh
             - ./buildAndPushReqExecArtifacts.sh CentOS7_reqExec_repo
             - popd

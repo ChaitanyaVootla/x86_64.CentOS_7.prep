@@ -11,6 +11,25 @@ resources:
     integration: aws_bits_access
     pointer:
       region: us-east-1
+      
+  - name: c7_repo
+    type: gitRepo
+    integration: avinci_gh
+    pointer:
+      sourceName: dry-dock/c7
+      branch: master
+
+  - name: c7_img
+    type: image
+    integration: shipDH
+    pointer:
+      sourceName: "drydock/c7"
+    seed:
+      versionName: master
+
+  - name: c7_dh_cli
+    type: cliConfig
+    integration: shipDH
 
   - name: CentOS7_reqExec_repo
     type: gitRepo
@@ -38,3 +57,20 @@ jobs:
             - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
             - ./buildAndPushReqExecArtifacts.sh CentOS7_reqExec_repo
             - popd
+            
+  - name: x86_64_CentOS_7_prep
+    type: runSh
+    triggerMode: parallel
+    dependencyMode: strict
+    steps:
+      - IN: x86_64_CentOS_7_prep_repo
+        switch: off
+      - IN: c7_dh_cli
+        switch: off
+      - IN: c7_repo
+      - TASK:
+          script:
+            - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
+            - ./buildImage.sh c7 x86_64_CentOS_7_prep
+            - popd
+      - OUT: c7_img

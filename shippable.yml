@@ -86,7 +86,7 @@ jobs:
               # the x86_64 binaries are the same. Use the Shippable CentOS_7 image if it becomes available
               # as it will serve as an image test.
               imageName: drydock/u16golall
-              imageTag: master
+              imageTag: v6.1.4
           script:
             # Note: gvm doesn't seem to load automatically, so add it to the PATH manually.
             # Remove this if its not needed anymore.

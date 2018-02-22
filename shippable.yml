@@ -6,12 +6,12 @@ resources:
       sourceName: shippable/x86_64.CentOS_7.prep
       branch: master
 
-  - name: CentOS7_bits_access_cli
+  - name: c7_bits_access_cli
     type: cliConfig
     integration: aws_bits_access
     pointer:
       region: us-east-1
-      
+
   - name: c7_repo
     type: gitRepo
     integration: avinci_gh
@@ -53,6 +53,13 @@ resources:
       sourceName: shippable/reqExec
       branch: master
 
+  - name: c7_micro_repo
+    type: gitRepo
+    integration: avinci_gh
+    pointer:
+      sourceName: Shippable/micro
+      branch: master
+
 jobs:
   - name: reqExec_x86_64_CentOS_7_pack
     type: runSh
@@ -63,7 +70,7 @@ jobs:
     steps:
       - IN: x86_64_CentOS_7_prep_repo
         switch: off
-      - IN: CentOS7_bits_access_cli
+      - IN: c7_bits_access_cli
         switch: off
       - IN: CentOS7_reqExec_repo
       - TASK:
@@ -72,7 +79,37 @@ jobs:
             - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
             - ./buildAndPushReqExecArtifacts.sh CentOS7_reqExec_repo
             - popd
-            
+
+  - name: reports_x86_64_CentOS_7_pack
+    type: runSh
+    triggerMode: parallel
+    dependencyMode: strict
+    runtime:
+      nodePool: x86_c07_cus_01
+    steps:
+      - IN: x86_64_CentOS_7_prep_repo
+        switch: off
+      - IN: c7_bits_access_cli
+        switch: off
+      # Reports are unlikely to change too often, so manually build when required.
+      - IN: c7_micro_repo
+        switch: off
+      - TASK:
+          runtime:
+            options:
+              # Note: It doesn't matter which image we use as Go can cross-compile and all
+              # the x86_64 binaries are the same. Use the Shippable CentOS_7 image if it becomes available
+              # as it will serve as an image test.
+              imageName: drydock/u16golall
+              imageTag: v6.1.4
+          script:
+            # Note: gvm doesn't seem to load automatically, so add it to the PATH manually.
+            # Remove this if its not needed anymore.
+            - PATH="$PATH:/root/.gvm/gos/go1.9.2/bin"
+            - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
+            - ./buildAndPushReportsArtifacts.sh c7_micro_repo
+            - popd
+
   - name: x86_64_CentOS_7_prep
     type: runSh
     triggerMode: parallel

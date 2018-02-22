@@ -142,6 +142,6 @@ jobs:
           script:
             - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
             - ./buildImage.sh c7all all_x86_64_CentOS_7_prep
-            - docker run drydock/c7all:master /c7all/services/service_test.sh
+            - docker run "drydock/c7all:master" "/c7all/services/service_test.sh"
             - popd
       - OUT: c7all_img

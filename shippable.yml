@@ -42,6 +42,21 @@ resources:
     seed:
       versionName: master
 
+  - name: c7nodall_repo
+    type: gitRepo
+    integration: avinci_gh
+    pointer:
+      sourceName: dry-dock/c7nodall
+      branch: master
+
+  - name: c7nodall_img
+    type: image
+    integration: shipDH
+    pointer:
+      sourceName: "drydock/c7nodall"
+    seed:
+      versionName: master
+
   - name: c7_dh_cli
     type: cliConfig
     integration: shipDH
@@ -108,3 +123,21 @@ jobs:
             - docker run "drydock/c7all:master" "/c7all/services/service_test.sh"
             - popd
       - OUT: c7all_img
+
+  - name: nodall_x86_64_CentOS_7_prep
+    type: runSh
+    triggerMode: parallel
+    dependencyMode: strict
+    steps:
+      - IN: x86_64_CentOS_7_prep_repo
+        switch: off
+      - IN: c7_dh_cli
+        switch: off
+      - IN: c7all_img
+      - IN: c7nodall_repo
+      - TASK:
+          script:
+            - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
+            - ./buildImage.sh c7nodall nodall_x86_64_CentOS_7_prep
+            - popd
+      - OUT: c7nodall_img

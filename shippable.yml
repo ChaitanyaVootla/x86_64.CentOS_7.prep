@@ -72,6 +72,21 @@ resources:
     seed:
       versionName: master
 
+  - name: c7javall_repo
+    type: gitRepo
+    integration: avinci_gh
+    pointer:
+      sourceName: dry-dock/c7javall
+      branch: master
+
+  - name: c7javall_img
+    type: image
+    integration: shipDH
+    pointer:
+      sourceName: "drydock/c7javall"
+    seed:
+      versionName: master
+
   - name: c7_dh_cli
     type: cliConfig
     integration: shipDH
@@ -211,3 +226,21 @@ jobs:
             - ./buildImage.sh c7pytall pytall_x86_64_CentOS_7_prep
             - popd
       - OUT: c7pytall_img
+
+  - name: javall_x86_64_CentOS_7_prep
+    type: runSh
+    triggerMode: parallel
+    dependencyMode: strict
+    steps:
+      - IN: x86_64_CentOS_7_prep_repo
+        switch: off
+      - IN: c7_dh_cli
+        switch: off
+      - IN: c7all_img
+      - IN: c7javall_repo
+      - TASK:
+          script:
+            - pushd $(shipctl get_resource_state "x86_64_CentOS_7_prep_repo")
+            - ./buildImage.sh c7javall javall_x86_64_CentOS_7_prep
+            - popd
+      - OUT: c7javall_img
